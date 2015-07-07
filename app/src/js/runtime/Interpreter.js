@@ -3,6 +3,9 @@ let Tokenizer = require('../lexer/Tokenizer'),
     RunResult = require('./RunResult'),
     DefaultEnvironment = require('./DefaultEnvironment');
 
+/**
+ * Implements an interpreter capable of running an entire program
+ */
 class Interpreter {
     static run(code) {
         let env = new DefaultEnvironment();

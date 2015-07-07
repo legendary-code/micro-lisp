@@ -1,5 +1,5 @@
 /**
- * Represents an AST node
+ * Represents an abstract syntax tree node
  */
 class Node {
     constructor(location) {

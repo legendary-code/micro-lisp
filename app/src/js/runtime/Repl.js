@@ -4,7 +4,7 @@ let Tokenizer = require('../lexer/Tokenizer'),
     DefaultEnvironment = require('./DefaultEnvironment');
 
 /**
- * Implements a read-evaluate-print-loop
+ * Implements a read-evaluate-print-loop capable of evaluating expressions
  */
 class Repl {
     constructor() {

@@ -1,5 +1,8 @@
 let Node = require('./Node');
 
+/**
+ * Represents a function definition
+ */
 class FunctionDefinition extends Node {
     constructor(location, name, args, expression) {
         super(location);

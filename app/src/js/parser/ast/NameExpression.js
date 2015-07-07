@@ -1,6 +1,9 @@
 let Node = require('./Node'),
     RuntimeError = require('../../runtime/RuntimeError');
 
+/**
+ * Represents a name expression
+ */
 class NameExpression extends Node {
     constructor(location, name) {
         super(location);

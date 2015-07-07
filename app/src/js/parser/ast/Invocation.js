@@ -3,6 +3,9 @@ let Node = require('./Node'),
     FunctionDefinition = require('./FunctionDefinition'),
     NativeFunctionDefinition = require('./NativeFunctionDefinition');
 
+/**
+ * Represents an invocation of a function
+ */
 class Invocation extends Node {
     constructor(location, name, args) {
         super(location);

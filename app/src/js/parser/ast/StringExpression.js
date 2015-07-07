@@ -1,5 +1,8 @@
 let LiteralExpression = require('./LiteralExpression');
 
+/**
+ * Represents a string value
+ */
 class StringExpression extends LiteralExpression {
     constructor(location, value) {
         super(location, value);

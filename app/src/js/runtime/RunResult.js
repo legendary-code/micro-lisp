@@ -1,5 +1,5 @@
 /**
- * Represents the result of executing a program or expression
+ * Represents the result of evaluating a program or expression
  */
 class RunResult {
     constructor(expression, environment, error) {

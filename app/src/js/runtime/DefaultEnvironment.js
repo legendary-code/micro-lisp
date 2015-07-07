@@ -1,7 +1,9 @@
 let Environment = require('./Environment'),
     NativeFunctionDefinition = require('../parser/ast/NativeFunctionDefinition'),
     RuntimeError = require('./RuntimeError'),
-    NumberExpression = require('../parser/ast/NumberExpression');
+    NumberExpression = require('../parser/ast/NumberExpression'),
+    LiteralExpression = require('../parser/ast/LiteralExpression'),
+    StringExpression = require('../parser/ast/StringExpression');
 
 /**
  * Provides an environment with built-in names and functionality
@@ -10,6 +12,7 @@ class DefaultEnvironment extends Environment {
     constructor() {
         super();
         this._defineFunction("+", this._add.bind(this));
+        this._defineFunction("print", this._print.bind(this));
     }
 
     _defineFunction(name, evalFunc) {
@@ -24,7 +27,7 @@ class DefaultEnvironment extends Environment {
     }
 
     _checkType(expression, expectedType) {
-        if (!expression || expression.type != expectedType) {
+        if (!expression || !(expression instanceof expectedType)) {
             throw new RuntimeError(
                 "unexpected type, expected " + expectedType.name + ", was " + (!expression ? "undefined" : expression.constructor.name),
                 null
@@ -41,6 +44,18 @@ class DefaultEnvironment extends Environment {
         this._checkType(right, NumberExpression);
 
         return new NumberExpression(null, left.value + right.value);
+    }
+
+    _print(env, ...args) {
+        args.forEach(v => this._checkType(v, LiteralExpression));
+
+        let output = "";
+        args.forEach(v => output += v.value);
+        let stdout = env.find("$stdout") || "";
+        stdout += output;
+        env.define("$stdout", stdout);
+
+        return new StringExpression(null, output);
     }
 }
 

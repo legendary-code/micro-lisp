@@ -1,3 +1,6 @@
+/**
+ * A stream of tokens that allows peeking one token ahead
+ */
 class TokenStream {
     constructor(tokens) {
         this._tokens = tokens;

@@ -1,5 +1,8 @@
 let Node = require('./Node');
 
+/**
+ * Represents an entire program
+ */
 class Program extends Node {
     constructor(location, expressions) {
         super(location);
