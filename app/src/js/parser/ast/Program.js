@@ -12,9 +12,15 @@ class Program extends Node {
     eval(env) {
         let lastExpr = null;
 
+        // enter extra scope, so we can't clobber names in global namespace
+        // that may have special meaning, like $stdout
+        env.enterScope();
+
         this._expressions.forEach(e => {
             lastExpr = e.eval(env);
         });
+
+        env.exitScope();
 
         return lastExpr;
     }

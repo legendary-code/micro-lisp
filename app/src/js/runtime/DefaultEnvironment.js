@@ -51,9 +51,9 @@ class DefaultEnvironment extends Environment {
 
         let output = "";
         args.forEach(v => output += v.value);
-        let stdout = env.find("$stdout") || "";
+        let stdout = env.findGlobal("$stdout") || "";
         stdout += output;
-        env.define("$stdout", stdout);
+        env.defineGlobal("$stdout", stdout);
 
         return new StringExpression(null, output);
     }

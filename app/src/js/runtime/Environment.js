@@ -33,6 +33,18 @@ class Environment {
 
         return null;
     }
+
+    defineGlobal(name, expression) {
+        this._env[0][name] = expression;
+    }
+
+    findGlobal(name) {
+        if (this._env[0].hasOwnProperty(name)) {
+            return this._env[0][name];
+        }
+
+        return null;
+    }
 }
 
 module.exports = Environment;
