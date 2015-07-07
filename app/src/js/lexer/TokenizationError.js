@@ -1,14 +1,11 @@
-/**
- * Represents an error throw during tokenization with contextual information
- */
-class TokenizationError {
-    constructor(message, location) {
-        this._message = message;
-        this._location = location;
-    }
+let GeneralError = require('../common/GeneralError');
 
-    toString() {
-        return this._message + " at " + this._location.toString();
+/**
+ * Represents an error thrown during tokenization with contextual information
+ */
+class TokenizationError extends GeneralError {
+    constructor(message, location) {
+        super(message, location);
     }
 }
 
