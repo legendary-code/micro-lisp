@@ -43,7 +43,7 @@ Object.defineProperty(GeneralError.prototype, "location", { configurable: true, 
 
 Object.defineProperty(GeneralError.prototype, "toString", { writable: true, configurable: true, value: function value() {
         "use strict";
-        return this.$GeneralError_message + (this.$GeneralError_location ? " at " + this.$GeneralError_location.toString() : "");
+        return this.constructor.name + ": " + this.$GeneralError_message + (this.$GeneralError_location ? " at " + this.$GeneralError_location.toString() : "");
     } });
 
 module.exports = GeneralError;
@@ -57,13 +57,13 @@ var React = require("react"),
 /**
  * Represents the main page of the site
  */
-var ____Class7 = React.Component;for (var ____Class7____Key in ____Class7) {
-    if (____Class7.hasOwnProperty(____Class7____Key)) {
-        Page[____Class7____Key] = ____Class7[____Class7____Key];
+var ____Class0 = React.Component;for (var ____Class0____Key in ____Class0) {
+    if (____Class0.hasOwnProperty(____Class0____Key)) {
+        Page[____Class0____Key] = ____Class0[____Class0____Key];
     }
-}var ____SuperProtoOf____Class7 = ____Class7 === null ? null : ____Class7.prototype;Page.prototype = Object.create(____SuperProtoOf____Class7);Page.prototype.constructor = Page;Page.__superConstructor__ = ____Class7;function Page() {
-    "use strict";if (____Class7 !== null) {
-        ____Class7.apply(this, arguments);
+}var ____SuperProtoOf____Class0 = ____Class0 === null ? null : ____Class0.prototype;Page.prototype = Object.create(____SuperProtoOf____Class0);Page.prototype.constructor = Page;Page.__superConstructor__ = ____Class0;function Page() {
+    "use strict";if (____Class0 !== null) {
+        ____Class0.apply(this, arguments);
     }
 }
 Object.defineProperty(Page.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -87,11 +87,11 @@ var React = require("react"),
 /**
  * Represents a REPL component with input box and scrolling output
  */
-var ____Class8 = React.Component;for (var ____Class8____Key in ____Class8) {
-    if (____Class8.hasOwnProperty(____Class8____Key)) {
-        ReplBox[____Class8____Key] = ____Class8[____Class8____Key];
+var ____Class1 = React.Component;for (var ____Class1____Key in ____Class1) {
+    if (____Class1.hasOwnProperty(____Class1____Key)) {
+        ReplBox[____Class1____Key] = ____Class1[____Class1____Key];
     }
-}var ____SuperProtoOf____Class8 = ____Class8 === null ? null : ____Class8.prototype;ReplBox.prototype = Object.create(____SuperProtoOf____Class8);ReplBox.prototype.constructor = ReplBox;ReplBox.__superConstructor__ = ____Class8;
+}var ____SuperProtoOf____Class1 = ____Class1 === null ? null : ____Class1.prototype;ReplBox.prototype = Object.create(____SuperProtoOf____Class1);ReplBox.prototype.constructor = ReplBox;ReplBox.__superConstructor__ = ____Class1;
 function ReplBox() {
     "use strict";
     this.state = {
@@ -110,7 +110,7 @@ Object.defineProperty(ReplBox.prototype, "render", { writable: true, configurabl
 
 Object.defineProperty(ReplBox.prototype, "$ReplBox_onSubmit", { writable: true, configurable: true, value: function value(code) {
         "use strict";
-        if (!this.$ReplBox_repl.canEval(code)) {
+        if (!this.$ReplBox_repl.canParse(code)) {
             return false;
         }
 
@@ -168,13 +168,13 @@ var React = require("react"),
 /**
  * Represents an error that occurred during evaluation
  */
-var ____Classc = React.Component;for (var ____Classc____Key in ____Classc) {
-    if (____Classc.hasOwnProperty(____Classc____Key)) {
-        ReplErrorLine[____Classc____Key] = ____Classc[____Classc____Key];
+var ____Class4 = React.Component;for (var ____Class4____Key in ____Class4) {
+    if (____Class4.hasOwnProperty(____Class4____Key)) {
+        ReplErrorLine[____Class4____Key] = ____Class4[____Class4____Key];
     }
-}var ____SuperProtoOf____Classc = ____Classc === null ? null : ____Classc.prototype;ReplErrorLine.prototype = Object.create(____SuperProtoOf____Classc);ReplErrorLine.prototype.constructor = ReplErrorLine;ReplErrorLine.__superConstructor__ = ____Classc;function ReplErrorLine() {
-    "use strict";if (____Classc !== null) {
-        ____Classc.apply(this, arguments);
+}var ____SuperProtoOf____Class4 = ____Class4 === null ? null : ____Class4.prototype;ReplErrorLine.prototype = Object.create(____SuperProtoOf____Class4);ReplErrorLine.prototype.constructor = ReplErrorLine;ReplErrorLine.__superConstructor__ = ____Class4;function ReplErrorLine() {
+    "use strict";if (____Class4 !== null) {
+        ____Class4.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplErrorLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -196,13 +196,13 @@ var React = require("react"),
 /**
  * Represents the return expression in textual form
  */
-var ____Classb = React.Component;for (var ____Classb____Key in ____Classb) {
-    if (____Classb.hasOwnProperty(____Classb____Key)) {
-        ReplExpressionLine[____Classb____Key] = ____Classb[____Classb____Key];
+var ____Class3 = React.Component;for (var ____Class3____Key in ____Class3) {
+    if (____Class3.hasOwnProperty(____Class3____Key)) {
+        ReplExpressionLine[____Class3____Key] = ____Class3[____Class3____Key];
     }
-}var ____SuperProtoOf____Classb = ____Classb === null ? null : ____Classb.prototype;ReplExpressionLine.prototype = Object.create(____SuperProtoOf____Classb);ReplExpressionLine.prototype.constructor = ReplExpressionLine;ReplExpressionLine.__superConstructor__ = ____Classb;function ReplExpressionLine() {
-    "use strict";if (____Classb !== null) {
-        ____Classb.apply(this, arguments);
+}var ____SuperProtoOf____Class3 = ____Class3 === null ? null : ____Class3.prototype;ReplExpressionLine.prototype = Object.create(____SuperProtoOf____Class3);ReplExpressionLine.prototype.constructor = ReplExpressionLine;ReplExpressionLine.__superConstructor__ = ____Class3;function ReplExpressionLine() {
+    "use strict";if (____Class3 !== null) {
+        ____Class3.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplExpressionLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -223,13 +223,13 @@ var React = require("react"),
 /**
  * Represents the input box in a REPL box \u00bb
  */
-var ____Classa = React.Component;for (var ____Classa____Key in ____Classa) {
-    if (____Classa.hasOwnProperty(____Classa____Key)) {
-        ReplInputLine[____Classa____Key] = ____Classa[____Classa____Key];
+var ____Class5 = React.Component;for (var ____Class5____Key in ____Class5) {
+    if (____Class5.hasOwnProperty(____Class5____Key)) {
+        ReplInputLine[____Class5____Key] = ____Class5[____Class5____Key];
     }
-}var ____SuperProtoOf____Classa = ____Classa === null ? null : ____Classa.prototype;ReplInputLine.prototype = Object.create(____SuperProtoOf____Classa);ReplInputLine.prototype.constructor = ReplInputLine;ReplInputLine.__superConstructor__ = ____Classa;function ReplInputLine() {
-    "use strict";if (____Classa !== null) {
-        ____Classa.apply(this, arguments);
+}var ____SuperProtoOf____Class5 = ____Class5 === null ? null : ____Class5.prototype;ReplInputLine.prototype = Object.create(____SuperProtoOf____Class5);ReplInputLine.prototype.constructor = ReplInputLine;ReplInputLine.__superConstructor__ = ____Class5;function ReplInputLine() {
+    "use strict";if (____Class5 !== null) {
+        ____Class5.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplInputLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -314,13 +314,13 @@ var React = require("react");
  * Represents a single block of output or input inside REPL box, along with a margin which may optionally
  * contain a symbol
  */
-var ____Classd = React.Component;for (var ____Classd____Key in ____Classd) {
-    if (____Classd.hasOwnProperty(____Classd____Key)) {
-        ReplLine[____Classd____Key] = ____Classd[____Classd____Key];
+var ____Class6 = React.Component;for (var ____Class6____Key in ____Class6) {
+    if (____Class6.hasOwnProperty(____Class6____Key)) {
+        ReplLine[____Class6____Key] = ____Class6[____Class6____Key];
     }
-}var ____SuperProtoOf____Classd = ____Classd === null ? null : ____Classd.prototype;ReplLine.prototype = Object.create(____SuperProtoOf____Classd);ReplLine.prototype.constructor = ReplLine;ReplLine.__superConstructor__ = ____Classd;function ReplLine() {
-    "use strict";if (____Classd !== null) {
-        ____Classd.apply(this, arguments);
+}var ____SuperProtoOf____Class6 = ____Class6 === null ? null : ____Class6.prototype;ReplLine.prototype = Object.create(____SuperProtoOf____Class6);ReplLine.prototype.constructor = ReplLine;ReplLine.__superConstructor__ = ____Class6;function ReplLine() {
+    "use strict";if (____Class6 !== null) {
+        ____Class6.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -366,13 +366,13 @@ var React = require("react"),
 /**
  * Represents a block of output written to stdout from evaluating an expression
  */
-var ____Class9 = React.Component;for (var ____Class9____Key in ____Class9) {
-    if (____Class9.hasOwnProperty(____Class9____Key)) {
-        ReplOutputLine[____Class9____Key] = ____Class9[____Class9____Key];
+var ____Class2 = React.Component;for (var ____Class2____Key in ____Class2) {
+    if (____Class2.hasOwnProperty(____Class2____Key)) {
+        ReplOutputLine[____Class2____Key] = ____Class2[____Class2____Key];
     }
-}var ____SuperProtoOf____Class9 = ____Class9 === null ? null : ____Class9.prototype;ReplOutputLine.prototype = Object.create(____SuperProtoOf____Class9);ReplOutputLine.prototype.constructor = ReplOutputLine;ReplOutputLine.__superConstructor__ = ____Class9;function ReplOutputLine() {
-    "use strict";if (____Class9 !== null) {
-        ____Class9.apply(this, arguments);
+}var ____SuperProtoOf____Class2 = ____Class2 === null ? null : ____Class2.prototype;ReplOutputLine.prototype = Object.create(____SuperProtoOf____Class2);ReplOutputLine.prototype.constructor = ReplOutputLine;ReplOutputLine.__superConstructor__ = ____Class2;function ReplOutputLine() {
+    "use strict";if (____Class2 !== null) {
+        ____Class2.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplOutputLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -1806,7 +1806,8 @@ module.exports = Interpreter;
 var Tokenizer = require("../lexer/Tokenizer"),
     Parser = require("../parser/Parser"),
     RunResult = require("./RunResult"),
-    DefaultEnvironment = require("./DefaultEnvironment");
+    DefaultEnvironment = require("./DefaultEnvironment"),
+    TokenType = require("../lexer/TokenType");
 
 /**
  * Implements a read-evaluate-print-loop capable of evaluating expressions
@@ -1870,6 +1871,43 @@ Object.defineProperty(Repl.prototype, "canEval", { writable: true, configurable:
         return true;
     } });
 
+Object.defineProperty(Repl.prototype, "canParse", { writable: true, configurable: true, value: function value(code) {
+        "use strict";
+        var stream = undefined;
+        var parens = 0;
+
+        try {
+            stream = Tokenizer.tokenize(code);
+        } catch (error) {
+            return false;
+        }
+
+        // expect it to at least start with a left paren
+        if (!stream.curr() || stream.curr().type != TokenType.LEFT_PAREN) {
+            return false;
+        }
+
+        // see if parens are balanced
+        while (stream.curr()) {
+            switch (stream.curr().type) {
+                case TokenType.LEFT_PAREN:
+                    parens++;
+                    break;
+                case TokenType.RIGHT_PAREN:
+                    parens--;
+                    break;
+            }
+
+            if (parens < 0) {
+                return false;
+            }
+
+            stream.next();
+        }
+
+        return parens == 0;
+    } });
+
 Object.defineProperty(Repl.prototype, "env", { configurable: true, get: function get() {
         "use strict";
         return this.$Repl_env;
@@ -1877,7 +1915,7 @@ Object.defineProperty(Repl.prototype, "env", { configurable: true, get: function
 
 module.exports = Repl;
 
-},{"../lexer/Tokenizer":16,"../parser/Parser":18,"./DefaultEnvironment":31,"./RunResult":35}],35:[function(require,module,exports){
+},{"../lexer/TokenType":14,"../lexer/Tokenizer":16,"../parser/Parser":18,"./DefaultEnvironment":31,"./RunResult":35}],35:[function(require,module,exports){
 /**
  * Represents the result of evaluating a program or expression
  */
