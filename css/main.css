@@ -1,0 +1,108 @@
+/* Resets */
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block; }
+
+body {
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after {
+  content: '';
+  content: none; }
+
+q:before, q:after {
+  content: '';
+  content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+/* Components */
+.page {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 8px; }
+
+.repl-box {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border: 1px solid darkgray;
+  padding: 4px; }
+  .repl-box * {
+    font-size: 16px;
+    line-height: 16px;
+    font-family: "Courier New", Courier, monospace;
+    color: black;
+    white-space: pre; }
+
+.repl-line {
+  position: relative;
+  left: 0;
+  right: 0;
+  min-height: 16px; }
+  .repl-line .margin {
+    position: absolute;
+    display: inline-block;
+    width: 16px;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+    background-color: lightgray;
+    font-weight: bold;
+    vertical-align: top;
+    color: gray; }
+  .repl-line .content {
+    display: block;
+    min-height: 16px;
+    margin-left: 20px;
+    margin-right: 4px;
+    vertical-align: top; }
+
+.repl-line .repl-expression-line-content {
+  font-style: italic;
+  color: gray; }
+
+.repl-line .repl-input-line-content textarea {
+  display: block;
+  border: none;
+  outline: none;
+  min-height: 16px;
+  width: 100%;
+  resize: none; }
+
+.repl-line .repl-error-line-margin {
+  color: darkred; }
+
+.repl-line .repl-error-line-content {
+  font-style: italic;
+  color: darkred; }
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
