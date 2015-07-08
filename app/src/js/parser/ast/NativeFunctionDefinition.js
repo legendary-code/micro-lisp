@@ -10,9 +10,9 @@ class NativeFunctionDefinition extends Node {
         this._evalFunc = evalFunc;
     }
 
-    evalFunc(env, args) {
+    evalFunc(caller, env, args) {
         let evalFunc = this._evalFunc;
-        return evalFunc(env, ...args);
+        return evalFunc(caller, env, ...args);
     }
 
     toString() {

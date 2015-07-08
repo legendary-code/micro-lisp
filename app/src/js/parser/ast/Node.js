@@ -6,7 +6,7 @@ class Node {
         this._location = location;
     }
 
-    eval(env) {
+    eval(caller, env) {
         throw "eval() must be implemented for type " + this.constructor.name;
     }
 

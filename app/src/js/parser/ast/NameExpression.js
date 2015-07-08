@@ -14,7 +14,7 @@ class NameExpression extends Node {
         return this._name;
     }
 
-    eval(env) {
+    eval(caller, env) {
         let value = env.find(this._name);
 
         if (!value) {

@@ -11,7 +11,7 @@ class LetDefinition extends Node {
     }
 
     // For now, define globally, because of scoping issues
-    eval(env) {
+    eval(caller, env) {
         env.defineGlobal(this._name, this._expression);
         return this._expression;
     }

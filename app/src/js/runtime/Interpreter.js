@@ -25,7 +25,7 @@ class Interpreter {
         }
 
         try {
-            return new RunResult(program.eval(env), env, null);
+            return new RunResult(program.eval(program, env), env, null);
         } catch (error) {
             return new RunResult(program, env, error);
         }

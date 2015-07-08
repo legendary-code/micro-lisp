@@ -1,9 +1,11 @@
 let Environment = require('./Environment'),
     NativeFunctionDefinition = require('../parser/ast/NativeFunctionDefinition'),
     RuntimeError = require('./RuntimeError'),
+    Expression = require('../parser/ast/Expression'),
     NameExpression = require('../parser/ast/NameExpression'),
     NumberExpression = require('../parser/ast/NumberExpression'),
     LiteralExpression = require('../parser/ast/LiteralExpression'),
+    BooleanExpression = require('../parser/ast/BooleanExpression'),
     StringExpression = require('../parser/ast/StringExpression');
 
 /**
@@ -13,8 +15,12 @@ class DefaultEnvironment extends Environment {
     constructor() {
         super();
         this._defineFunction("+", this._add.bind(this));
+        this._defineFunction("-", this._subtract.bind(this));
+        this._defineFunction("*", this._multiply.bind(this));
+        this._defineFunction("/", this._divide.bind(this));
+        this._defineFunction("%", this._modulo.bind(this));
         this._defineFunction("print", this._print.bind(this));
-        this._defineFunction("let", this._let.bind(this));
+        this._defineFunction("if", this._if.bind(this));
     }
 
     _defineFunction(name, evalFunc) {
@@ -37,18 +43,56 @@ class DefaultEnvironment extends Environment {
         }
     }
 
-    _add(env, left, right) {
-        if (arguments.length != 3) {
-            throw this._badNumberOfArguments("+", 2, arguments.length - 1);
-        }
-
-        this._checkType(left, NumberExpression);
-        this._checkType(right, NumberExpression);
-
-        return new NumberExpression(null, left.value + right.value);
+    _add(caller, env, ...args) {
+        return this._nnaryOp(caller, (l,r) => l + r, args);
     }
 
-    _print(env, ...args) {
+    _subtract(caller, env, ...args) {
+        return this._nnaryOp(caller, (l,r) => l - r, args);
+    }
+
+    _multiply(caller, env, ...args) {
+        return this._nnaryOp(caller, (l,r) => l * r, args);
+    }
+
+    _divide(caller, env, ...args) {
+        return this._binaryOp(caller, (l,r) => Math.floor(l / r), args);
+    }
+
+    _modulo(caller, env, ...args) {
+        return this._binaryOp(caller, (l,r) => l % r, args);
+    }
+
+    _binaryOp(caller, operator, args) {
+        if (args.length != 2) {
+            throw this._badNumberOfArguments(caller.name, 2, args.length);
+        }
+
+        this._checkType(args[0], NumberExpression);
+        this._checkType(args[1], NumberExpression);
+
+        return new NumberExpression(null, operator(args[0].value, args[1].value));
+    }
+
+    _nnaryOp(caller, operator, args) {
+        if (args.length < 2) {
+            throw this._badNumberOfArguments(caller.name, ">=2", args.length);
+        }
+
+        args.forEach(v => this._checkType(v, NumberExpression));
+
+        let result = this._binaryOp(caller, operator, [args[0], args[1]]);
+        args = args.slice(2);
+
+        while (args.length > 0) {
+            result = this._binaryOp(caller, operator, [result, args[0]]);
+            args = args.slice(1);
+        }
+
+        return new NumberExpression(null, result);
+    }
+
+    _print(caller, env, ...args) {
         args.forEach(v => this._checkType(v, LiteralExpression));
 
         let output = "";
@@ -60,13 +104,20 @@ class DefaultEnvironment extends Environment {
         return new StringExpression(null, output);
     }
 
-    _let(env, name, value) {
-        this._checkType(name, NameExpression);
-        this._checkType(value, LiteralExpression);
+    // TODO: If needs to be handled as part of grammer as well, otherwise, both case expressions get evaluated
+    _if(caller, env, cond, trueCase, falseCase) {
+        this._checkType(cond, Expression);
+        this._checkType(trueCase, Expression);
+        this._checkType(falseCase, Expression);
 
-        env.define(name, value);
+        let result = cond.eval(caller, env);
+        this._checkType(result, BooleanExpression);
 
-        return value;
+        if (result.value) {
+            return trueCase.eval(caller, env);
+        } else {
+            return falseCase.eval(caller, env);
+        }
     }
 }
 

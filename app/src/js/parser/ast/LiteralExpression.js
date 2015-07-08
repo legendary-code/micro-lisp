@@ -9,7 +9,7 @@ class LiteralExpression extends Expression {
         this._value = value;
     }
 
-    eval(env) {
+    eval(caller, env) {
         return this;
     }
 

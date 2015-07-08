@@ -33,7 +33,7 @@ class Repl {
         }
 
         try {
-            return new RunResult(expr.eval(env), env, null);
+            return new RunResult(expr.eval(expr, env), env, null);
         } catch (error) {
             return new RunResult(expr, env, error);
         }

@@ -128,13 +128,21 @@ class Parser {
 
             case TokenType.NAME:
                 this._next();
-                return new NameExpression(token.location, token.value);
+                return this._parseName(token.location, token.value);
         }
 
         throw new ParseError(
             "unexpected token '" + TokenType.toString(token.type) + "' while parsing expression",
             token.location
         );
+    }
+
+    _parseName(location, name) {
+        if (name === "true" || name === "false") {
+            return new BooleanExpression(location, Boolean(name));
+        }
+
+        return new NameExpression(location, name);
     }
 
     _parseInvocation() {

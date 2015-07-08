@@ -21,7 +21,7 @@ class Invocation extends Node {
         return this._args;
     }
 
-    eval(env) {
+    eval(caller, env) {
         let funcDef = env.find(this._name);
 
         if (!funcDef) {
@@ -38,7 +38,7 @@ class Invocation extends Node {
 
         let evaluatedArgs = [];
         for (let i = 0; i < this._args.length; ++i) {
-            evaluatedArgs.push(this._args[i].eval(env));
+            evaluatedArgs.push(this._args[i].eval(caller, env));
         }
 
         if (funcDef.constructor == FunctionDefinition) {
@@ -63,7 +63,7 @@ class Invocation extends Node {
             env.define(funcDef.args[i], args[i]);
         }
 
-        let value = funcDef.expression.eval(env);
+        let value = funcDef.expression.eval(funcDef, env);
 
         env.exitScope();
 
@@ -71,7 +71,7 @@ class Invocation extends Node {
     }
 
     _evalNativeFunction(funcDef, env, args) {
-        return funcDef.evalFunc(env, args);
+        return funcDef.evalFunc(funcDef, env, args);
     }
 
     toString() {

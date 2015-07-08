@@ -4,7 +4,11 @@ let React = require('react'),
     ReplInputLine = require('./ReplInputLine'),
     ReplErrorLine = require('./ReplErrorLine'),
     Repl = require('../runtime/Repl'),
-    Invocation = require('../parser/ast/Invocation');
+    NativeFunctionDefinition = require('../parser/ast/NativeFunctionDefinition'),
+    FunctionDefinition = require('../parser/ast/FunctionDefinition'),
+    Invocation = require('../parser/ast/Invocation'),
+    StringExpression = require('../parser/ast/StringExpression'),
+    RuntimeError = require('../runtime/RuntimeError');
 
 /**
  * Represents a REPL component with input box and scrolling output
@@ -12,17 +16,34 @@ let React = require('react'),
 class ReplBox extends React.Component {
     constructor() {
         this.state = {
-            lines: [
-                <ReplOutputLine>
-                    Welcome to the Micro-Lisp REPL!<br />
-                    Type '(help)' for a list of commands
-                </ReplOutputLine>
-            ]
+            lines: []
         };
 
+        this._reset();
+    }
+
+    _reset() {
+        this.state.lines = [
+            <ReplOutputLine>
+                Welcome to the Micro-Lisp REPL!<br />
+                Type '(help)' for a list of commands
+            </ReplOutputLine>
+        ];
+
         this._repl = new Repl();
-        this._repl.eval("(defn help () (let $replCommand \"help\"))");
-        this._repl.eval("(defn clear () (let $replCommand \"clear\"))");
+        this._installCommand("help");
+        this._installCommand("clear");
+        this._installCommand("reset");
+    }
+
+    _installCommand(command) {
+        this._repl.env.defineGlobal(
+            command,
+            new NativeFunctionDefinition(
+                null,
+                v => this._replCommand.apply(this, [command])
+            )
+        );
     }
 
     render() {
@@ -41,36 +62,17 @@ class ReplBox extends React.Component {
             return false;
         }
 
-        let result = this._repl.eval(code);
         let lines = this.state.lines;
-        let stdout = this._repl.env.findGlobal("$stdout");
-        let cmd = this._repl.env.findGlobal("$replCommand");
-
-        this._repl.env.defineGlobal("$stdout", null);
-        this._repl.env.defineGlobal("$replCommand", null);
-
         lines.push(
             <ReplInputLine editable={false}>{code}</ReplInputLine>
         );
 
-        // repl commands
-        if (cmd) {
-            switch (cmd.value) {
-                case "help":
-                    lines.push(
-                        <ReplOutputLine>
-                            (help)  - shows this information<br/>
-                            (clear) - clears output
-                        </ReplOutputLine>
-                    );
-                    break;
+        let result = this._repl.eval(code);
+        let stdout = this._repl.env.findGlobal("$stdout");
+        this._repl.env.defineGlobal("$stdout", null);
 
-                case "clear":
-                    lines = [];
-                    break;
-            }
-
-            this.setState({lines: lines});
+        if (this.state.replCommandExecuted) {
+            this.setState({lines: this.state.lines, replCommandExecuted: false});
             return true;
         }
 
@@ -93,6 +95,32 @@ class ReplBox extends React.Component {
         }
 
         this.setState({lines: lines});
+
+        return true;
+    }
+
+    _replCommand(command) {
+        this.state.replCommandExecuted = true;
+
+        switch (command) {
+            case "help":
+                this.state.lines.push(
+                    <ReplOutputLine>
+                        (help)  - shows this information<br/>
+                        (clear) - clears output<br />
+                        (reset) - reset everything
+                    </ReplOutputLine>
+                );
+                break;
+
+            case "clear":
+                this.state.lines = [];
+                break;
+
+            case "reset":
+                this._reset();
+                break;
+        }
 
         return true;
     }
