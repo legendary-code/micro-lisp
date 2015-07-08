@@ -1,6 +1,7 @@
 let Environment = require('./Environment'),
     NativeFunctionDefinition = require('../parser/ast/NativeFunctionDefinition'),
     RuntimeError = require('./RuntimeError'),
+    NameExpression = require('../parser/ast/NameExpression'),
     NumberExpression = require('../parser/ast/NumberExpression'),
     LiteralExpression = require('../parser/ast/LiteralExpression'),
     StringExpression = require('../parser/ast/StringExpression');
@@ -13,6 +14,7 @@ class DefaultEnvironment extends Environment {
         super();
         this._defineFunction("+", this._add.bind(this));
         this._defineFunction("print", this._print.bind(this));
+        this._defineFunction("let", this._let.bind(this));
     }
 
     _defineFunction(name, evalFunc) {
@@ -56,6 +58,15 @@ class DefaultEnvironment extends Environment {
         env.defineGlobal("$stdout", stdout);
 
         return new StringExpression(null, output);
+    }
+
+    _let(env, name, value) {
+        this._checkType(name, NameExpression);
+        this._checkType(value, LiteralExpression);
+
+        env.define(name, value);
+
+        return value;
     }
 }
 

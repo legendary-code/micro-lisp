@@ -6,7 +6,8 @@ let ParseError = require('./ParseError'),
     BooleanExpression = require('./ast/BooleanExpression'),
     Invocation = require('./ast/Invocation'),
     FunctionDefinition = require('./ast/FunctionDefinition'),
-    NameExpression = require('./ast/NameExpression');
+    NameExpression = require('./ast/NameExpression'),
+    LetExpression = require('./ast/LetExpression');
 
 /**
  * Represents a parser that is capable of parsing various expressions
@@ -119,6 +120,10 @@ class Parser {
                     return this._parseFunctionDefinition();
                 }
 
+                if (this._peek().value == "let") {
+                    return this._parseLetExpression();
+                }
+
                 return this._parseInvocation();
 
             case TokenType.NAME:
@@ -165,6 +170,17 @@ class Parser {
         this._expect(TokenType.RIGHT_PAREN);
 
         return new FunctionDefinition(location, nameToken.value, args, expression);
+    }
+
+    _parseLetExpression() {
+        let location = this._expect(TokenType.LEFT_PAREN).location;
+        this._expectName("let");
+        let nameToken = this._expect(TokenType.NAME);
+        let expression = this._parseExpression();
+
+        this._expect(TokenType.RIGHT_PAREN);
+
+        return new LetExpression(location, nameToken.value, expression);
     }
 }
 

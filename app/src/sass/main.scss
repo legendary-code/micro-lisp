@@ -1,3 +1,16 @@
 /* Resets */
 @import "reset";
 
+/* Components */
+@import "page";
+@import "repl-box";
+@import "repl-line";
+@import "repl-expression-line";
+@import "repl-input-line";
+@import "repl-error-line";
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}

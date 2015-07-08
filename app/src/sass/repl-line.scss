@@ -1,0 +1,27 @@
+.repl-line {
+  position: relative;
+  left: 0;
+  right: 0;
+  min-height: 16px;
+
+  .margin {
+    position: absolute;
+    display: inline-block;
+    width: 16px;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+    background-color: lightgray;
+    font-weight: bold;
+    vertical-align: top;
+    color: gray;
+  }
+
+  .content {
+    display: block;
+    min-height: 16px;
+    margin-left: 20px;
+    margin-right: 4px;
+    vertical-align: top;
+  }
+}
