@@ -16,7 +16,7 @@ class GeneralError {
     }
 
     toString() {
-        return this._message + (this._location ? " at " + this._location.toString() : "");
+        return this.constructor.name + ": " + this._message + (this._location ? " at " + this._location.toString() : "");
     }
 }
 

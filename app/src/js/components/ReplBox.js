@@ -37,7 +37,7 @@ class ReplBox extends React.Component {
     }
 
     _onSubmit(code) {
-        if (!this._repl.canEval(code)) {
+        if (!this._repl.canParse(code)) {
             return false;
         }
 
