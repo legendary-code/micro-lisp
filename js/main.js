@@ -82,7 +82,11 @@ var React = require("react"),
     ReplInputLine = require("./ReplInputLine"),
     ReplErrorLine = require("./ReplErrorLine"),
     Repl = require("../runtime/Repl"),
-    Invocation = require("../parser/ast/Invocation");
+    NativeFunctionDefinition = require("../parser/ast/NativeFunctionDefinition"),
+    FunctionDefinition = require("../parser/ast/FunctionDefinition"),
+    Invocation = require("../parser/ast/Invocation"),
+    StringExpression = require("../parser/ast/StringExpression"),
+    RuntimeError = require("../runtime/RuntimeError");
 
 /**
  * Represents a REPL component with input box and scrolling output
@@ -95,13 +99,28 @@ var ____Class1 = React.Component;for (var ____Class1____Key in ____Class1) {
 function ReplBox() {
     "use strict";
     this.state = {
-        lines: [React.createElement(ReplOutputLine, null, "Welcome to the Micro-Lisp REPL!", React.createElement("br", null), "Type '(help)' for a list of commands")]
+        lines: []
     };
 
-    this.$ReplBox_repl = new Repl();
-    this.$ReplBox_repl.eval("(defn help () (let $replCommand \"help\"))");
-    this.$ReplBox_repl.eval("(defn clear () (let $replCommand \"clear\"))");
+    this.$ReplBox_reset();
 }
+
+Object.defineProperty(ReplBox.prototype, "$ReplBox_reset", { writable: true, configurable: true, value: function value() {
+        "use strict";
+        this.state.lines = [React.createElement(ReplOutputLine, null, "Welcome to the Micro-Lisp REPL!", React.createElement("br", null), "Type '(help)' for a list of commands")];
+
+        this.$ReplBox_repl = new Repl();
+        this.$ReplBox_installCommand("help");
+        this.$ReplBox_installCommand("clear");
+        this.$ReplBox_installCommand("reset");
+    } });
+
+Object.defineProperty(ReplBox.prototype, "$ReplBox_installCommand", { writable: true, configurable: true, value: function value(command) {
+        "use strict";
+        this.$ReplBox_repl.env.defineGlobal(command, new NativeFunctionDefinition(null, (function (v) {
+            return this.$ReplBox_replCommand.apply(this, [command]);
+        }).bind(this)));
+    } });
 
 Object.defineProperty(ReplBox.prototype, "render", { writable: true, configurable: true, value: function value() {
         "use strict";
@@ -114,29 +133,15 @@ Object.defineProperty(ReplBox.prototype, "$ReplBox_onSubmit", { writable: true, 
             return false;
         }
 
-        var result = this.$ReplBox_repl.eval(code);
         var lines = this.state.lines;
-        var stdout = this.$ReplBox_repl.env.findGlobal("$stdout");
-        var cmd = this.$ReplBox_repl.env.findGlobal("$replCommand");
-
-        this.$ReplBox_repl.env.defineGlobal("$stdout", null);
-        this.$ReplBox_repl.env.defineGlobal("$replCommand", null);
-
         lines.push(React.createElement(ReplInputLine, { editable: false }, code));
 
-        // repl commands
-        if (cmd) {
-            switch (cmd.value) {
-                case "help":
-                    lines.push(React.createElement(ReplOutputLine, null, "(help)  - shows this information", React.createElement("br", null), "(clear) - clears output"));
-                    break;
+        var result = this.$ReplBox_repl.eval(code);
+        var stdout = this.$ReplBox_repl.env.findGlobal("$stdout");
+        this.$ReplBox_repl.env.defineGlobal("$stdout", null);
 
-                case "clear":
-                    lines = [];
-                    break;
-            }
-
-            this.setState({ lines: lines });
+        if (this.state.replCommandExecuted) {
+            this.setState({ lines: this.state.lines, replCommandExecuted: false });
             return true;
         }
 
@@ -157,9 +162,30 @@ Object.defineProperty(ReplBox.prototype, "$ReplBox_onSubmit", { writable: true, 
         return true;
     } });
 
+Object.defineProperty(ReplBox.prototype, "$ReplBox_replCommand", { writable: true, configurable: true, value: function value(command) {
+        "use strict";
+        this.state.replCommandExecuted = true;
+
+        switch (command) {
+            case "help":
+                this.state.lines.push(React.createElement(ReplOutputLine, null, "(help)  - shows this information", React.createElement("br", null), "(clear) - clears output", React.createElement("br", null), "(reset) - reset everything"));
+                break;
+
+            case "clear":
+                this.state.lines = [];
+                break;
+
+            case "reset":
+                this.$ReplBox_reset();
+                break;
+        }
+
+        return true;
+    } });
+
 module.exports = ReplBox;
 
-},{"../parser/ast/Invocation":22,"../runtime/Repl":34,"./ReplErrorLine":5,"./ReplExpressionLine":6,"./ReplInputLine":7,"./ReplOutputLine":9,"react":197}],5:[function(require,module,exports){
+},{"../parser/ast/FunctionDefinition":21,"../parser/ast/Invocation":22,"../parser/ast/NativeFunctionDefinition":26,"../parser/ast/StringExpression":30,"../runtime/Repl":34,"../runtime/RuntimeError":36,"./ReplErrorLine":5,"./ReplExpressionLine":6,"./ReplInputLine":7,"./ReplOutputLine":9,"react":197}],5:[function(require,module,exports){
 "use strict";
 
 var React = require("react"),
@@ -1066,10 +1092,19 @@ Object.defineProperty(Parser.prototype, "$Parser_parseExpression", { writable: t
 
             case TokenType.NAME:
                 this.$Parser_next();
-                return new NameExpression(token.location, token.value);
+                return this.$Parser_parseName(token.location, token.value);
         }
 
         throw new ParseError("unexpected token '" + TokenType.toString(token.type) + "' while parsing expression", token.location);
+    } });
+
+Object.defineProperty(Parser.prototype, "$Parser_parseName", { writable: true, configurable: true, value: function value(location, name) {
+        "use strict";
+        if (name === "true" || name === "false") {
+            return new BooleanExpression(location, Boolean(name));
+        }
+
+        return new NameExpression(location, name);
     } });
 
 Object.defineProperty(Parser.prototype, "$Parser_parseInvocation", { writable: true, configurable: true, value: function value() {
@@ -1184,7 +1219,7 @@ function FunctionDefinition(location, name, args, expression) {
     this.$FunctionDefinition_expression = expression;
 }
 
-Object.defineProperty(FunctionDefinition.prototype, "eval", { writable: true, configurable: true, value: function value(env) {
+Object.defineProperty(FunctionDefinition.prototype, "eval", { writable: true, configurable: true, value: function value(caller, env) {
         "use strict";
         env.define(this.$FunctionDefinition_name, this);
         return this;
@@ -1245,7 +1280,7 @@ Object.defineProperty(Invocation.prototype, "args", { configurable: true, get: f
         return this.$Invocation_args;
     } });
 
-Object.defineProperty(Invocation.prototype, "eval", { writable: true, configurable: true, value: function value(env) {
+Object.defineProperty(Invocation.prototype, "eval", { writable: true, configurable: true, value: function value(caller, env) {
         "use strict";
         var funcDef = env.find(this.$Invocation_name);
 
@@ -1259,7 +1294,7 @@ Object.defineProperty(Invocation.prototype, "eval", { writable: true, configurab
 
         var evaluatedArgs = [];
         for (var i = 0; i < this.$Invocation_args.length; ++i) {
-            evaluatedArgs.push(this.$Invocation_args[i].eval(env));
+            evaluatedArgs.push(this.$Invocation_args[i].eval(caller, env));
         }
 
         if (funcDef.constructor == FunctionDefinition) {
@@ -1291,7 +1326,7 @@ Object.defineProperty(Invocation.prototype, "$Invocation_evalFunction", { writab
             env.define(funcDef.args[i], args[i]);
         }
 
-        var value = funcDef.expression.eval(env);
+        var value = funcDef.expression.eval(funcDef, env);
 
         env.exitScope();
 
@@ -1300,7 +1335,7 @@ Object.defineProperty(Invocation.prototype, "$Invocation_evalFunction", { writab
 
 Object.defineProperty(Invocation.prototype, "$Invocation_evalNativeFunction", { writable: true, configurable: true, value: function value(funcDef, env, args) {
         "use strict";
-        return funcDef.evalFunc(env, args);
+        return funcDef.evalFunc(funcDef, env, args);
     } });
 
 Object.defineProperty(Invocation.prototype, "toString", { writable: true, configurable: true, value: function value() {
@@ -1331,7 +1366,7 @@ function LetDefinition(location, name, expression) {
 }
 
 // For now, define globally, because of scoping issues
-Object.defineProperty(LetDefinition.prototype, "eval", { writable: true, configurable: true, value: function value(env) {
+Object.defineProperty(LetDefinition.prototype, "eval", { writable: true, configurable: true, value: function value(caller, env) {
         "use strict";
         env.defineGlobal(this.$LetDefinition_name, this.$LetDefinition_expression);
         return this.$LetDefinition_expression;
@@ -1373,7 +1408,7 @@ function LiteralExpression(location, value) {
     this.$LiteralExpression_value = value;
 }
 
-Object.defineProperty(LiteralExpression.prototype, "eval", { writable: true, configurable: true, value: function value(env) {
+Object.defineProperty(LiteralExpression.prototype, "eval", { writable: true, configurable: true, value: function value(caller, env) {
         "use strict";
         return this;
     } });
@@ -1416,7 +1451,7 @@ Object.defineProperty(NameExpression.prototype, "name", { configurable: true, ge
     } });
 
 Object.defineProperty(NameExpression.prototype, "eval", { writable: true, configurable: true, value: (function (_value) {
-        var _valueWrapper = function value(_x) {
+        var _valueWrapper = function value(_x, _x2) {
             return _value.apply(this, arguments);
         };
 
@@ -1425,7 +1460,7 @@ Object.defineProperty(NameExpression.prototype, "eval", { writable: true, config
         };
 
         return _valueWrapper;
-    })(function (env) {
+    })(function (caller, env) {
         "use strict";
         var value = env.find(this.$NameExpression_name);
 
@@ -1463,10 +1498,10 @@ function NativeFunctionDefinition(name, evalFunc) {
     this.$NativeFunctionDefinition_evalFunc = evalFunc;
 }
 
-Object.defineProperty(NativeFunctionDefinition.prototype, "evalFunc", { writable: true, configurable: true, value: function value(env, args) {
+Object.defineProperty(NativeFunctionDefinition.prototype, "evalFunc", { writable: true, configurable: true, value: function value(caller, env, args) {
         "use strict";
         var evalFunc = this.$NativeFunctionDefinition_evalFunc;
-        return evalFunc.apply(null, [env].concat(args));
+        return evalFunc.apply(null, [caller, env].concat(args));
     } });
 
 Object.defineProperty(NativeFunctionDefinition.prototype, "toString", { writable: true, configurable: true, value: function value() {
@@ -1488,7 +1523,7 @@ function Node(location) {
     this.$Node_location = location;
 }
 
-Object.defineProperty(Node.prototype, "eval", { writable: true, configurable: true, value: function value(env) {
+Object.defineProperty(Node.prototype, "eval", { writable: true, configurable: true, value: function value(caller, env) {
         "use strict";
         throw "eval() must be implemented for type " + this.constructor.name;
     } });
@@ -1549,7 +1584,7 @@ function Program(location, expressions) {
     this.$Program_expressions = expressions;
 }
 
-Object.defineProperty(Program.prototype, "eval", { writable: true, configurable: true, value: function value(env) {
+Object.defineProperty(Program.prototype, "eval", { writable: true, configurable: true, value: function value(caller, env) {
         "use strict";
         var lastExpr = null;
 
@@ -1558,7 +1593,7 @@ Object.defineProperty(Program.prototype, "eval", { writable: true, configurable:
         env.enterScope();
 
         this.$Program_expressions.forEach(function (e) {
-            lastExpr = e.eval(env);
+            lastExpr = e.eval(caller, env);
         });
 
         env.exitScope();
@@ -1609,9 +1644,11 @@ module.exports = StringExpression;
 var Environment = require("./Environment"),
     NativeFunctionDefinition = require("../parser/ast/NativeFunctionDefinition"),
     RuntimeError = require("./RuntimeError"),
+    Expression = require("../parser/ast/Expression"),
     NameExpression = require("../parser/ast/NameExpression"),
     NumberExpression = require("../parser/ast/NumberExpression"),
     LiteralExpression = require("../parser/ast/LiteralExpression"),
+    BooleanExpression = require("../parser/ast/BooleanExpression"),
     StringExpression = require("../parser/ast/StringExpression");
 
 /**
@@ -1626,8 +1663,12 @@ function DefaultEnvironment() {
     "use strict";
     Environment.call(this);
     this.$DefaultEnvironment_defineFunction("+", this.$DefaultEnvironment_add.bind(this));
+    this.$DefaultEnvironment_defineFunction("-", this.$DefaultEnvironment_subtract.bind(this));
+    this.$DefaultEnvironment_defineFunction("*", this.$DefaultEnvironment_multiply.bind(this));
+    this.$DefaultEnvironment_defineFunction("/", this.$DefaultEnvironment_divide.bind(this));
+    this.$DefaultEnvironment_defineFunction("%", this.$DefaultEnvironment_modulo.bind(this));
     this.$DefaultEnvironment_defineFunction("print", this.$DefaultEnvironment_print.bind(this));
-    this.$DefaultEnvironment_defineFunction("let", this.$DefaultEnvironment_let.bind(this));
+    this.$DefaultEnvironment_defineFunction("if", this.$DefaultEnvironment_if.bind(this));
 }
 
 Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_defineFunction", { writable: true, configurable: true, value: function value(name, evalFunc) {
@@ -1647,20 +1688,76 @@ Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_checkTy
         }
     } });
 
-Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_add", { writable: true, configurable: true, value: function value(env, left, right) {
-        "use strict";
-        if (arguments.length != 3) {
-            throw this.$DefaultEnvironment_badNumberOfArguments("+", 2, arguments.length - 1);
-        }
-
-        this.$DefaultEnvironment_checkType(left, NumberExpression);
-        this.$DefaultEnvironment_checkType(right, NumberExpression);
-
-        return new NumberExpression(null, left.value + right.value);
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_add", { writable: true, configurable: true, value: function value(caller, env) {
+        "use strict";for (var args = [], $__0 = 2, $__1 = arguments.length; $__0 < $__1; $__0++) args.push(arguments[$__0]);
+        return this.$DefaultEnvironment_nnaryOp(caller, function (l, r) {
+            return l + r;
+        }, args);
     } });
 
-Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_print", { writable: true, configurable: true, value: function value(env) {
-        "use strict";for (var args = [], $__0 = 1, $__1 = arguments.length; $__0 < $__1; $__0++) args.push(arguments[$__0]);
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_subtract", { writable: true, configurable: true, value: function value(caller, env) {
+        "use strict";for (var args = [], $__0 = 2, $__1 = arguments.length; $__0 < $__1; $__0++) args.push(arguments[$__0]);
+        return this.$DefaultEnvironment_nnaryOp(caller, function (l, r) {
+            return l - r;
+        }, args);
+    } });
+
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_multiply", { writable: true, configurable: true, value: function value(caller, env) {
+        "use strict";for (var args = [], $__0 = 2, $__1 = arguments.length; $__0 < $__1; $__0++) args.push(arguments[$__0]);
+        return this.$DefaultEnvironment_nnaryOp(caller, function (l, r) {
+            return l * r;
+        }, args);
+    } });
+
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_divide", { writable: true, configurable: true, value: function value(caller, env) {
+        "use strict";for (var args = [], $__0 = 2, $__1 = arguments.length; $__0 < $__1; $__0++) args.push(arguments[$__0]);
+        return this.$DefaultEnvironment_binaryOp(caller, function (l, r) {
+            return Math.floor(l / r);
+        }, args);
+    } });
+
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_modulo", { writable: true, configurable: true, value: function value(caller, env) {
+        "use strict";for (var args = [], $__0 = 2, $__1 = arguments.length; $__0 < $__1; $__0++) args.push(arguments[$__0]);
+        return this.$DefaultEnvironment_binaryOp(caller, function (l, r) {
+            return l % r;
+        }, args);
+    } });
+
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_binaryOp", { writable: true, configurable: true, value: function value(caller, operator, args) {
+        "use strict";
+        if (args.length != 2) {
+            throw this.$DefaultEnvironment_badNumberOfArguments(caller.name, 2, args.length);
+        }
+
+        this.$DefaultEnvironment_checkType(args[0], NumberExpression);
+        this.$DefaultEnvironment_checkType(args[1], NumberExpression);
+
+        return new NumberExpression(null, operator(args[0].value, args[1].value));
+    } });
+
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_nnaryOp", { writable: true, configurable: true, value: function value(caller, operator, args) {
+        "use strict";
+        if (args.length < 2) {
+            throw this.$DefaultEnvironment_badNumberOfArguments(caller.name, ">=2", args.length);
+        }
+
+        args.forEach((function (v) {
+            return this.$DefaultEnvironment_checkType(v, NumberExpression);
+        }).bind(this));
+
+        var result = this.$DefaultEnvironment_binaryOp(caller, operator, [args[0], args[1]]);
+        args = args.slice(2);
+
+        while (args.length > 0) {
+            result = this.$DefaultEnvironment_binaryOp(caller, operator, [result, args[0]]);
+            args = args.slice(1);
+        }
+
+        return new NumberExpression(null, result);
+    } });
+
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_print", { writable: true, configurable: true, value: function value(caller, env) {
+        "use strict";for (var args = [], $__0 = 2, $__1 = arguments.length; $__0 < $__1; $__0++) args.push(arguments[$__0]);
         args.forEach((function (v) {
             return this.$DefaultEnvironment_checkType(v, LiteralExpression);
         }).bind(this));
@@ -1676,29 +1773,26 @@ Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_print",
         return new StringExpression(null, output);
     } });
 
-Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_let", { writable: true, configurable: true, value: (function (_value) {
-        var _valueWrapper = function value(_x, _x2, _x3) {
-            return _value.apply(this, arguments);
-        };
-
-        _valueWrapper.toString = function () {
-            return _value.toString();
-        };
-
-        return _valueWrapper;
-    })(function (env, name, value) {
+// TODO: If needs to be handled as part of grammer as well, otherwise, both case expressions get evaluated
+Object.defineProperty(DefaultEnvironment.prototype, "$DefaultEnvironment_if", { writable: true, configurable: true, value: function value(caller, env, cond, trueCase, falseCase) {
         "use strict";
-        this.$DefaultEnvironment_checkType(name, NameExpression);
-        this.$DefaultEnvironment_checkType(value, LiteralExpression);
+        this.$DefaultEnvironment_checkType(cond, Expression);
+        this.$DefaultEnvironment_checkType(trueCase, Expression);
+        this.$DefaultEnvironment_checkType(falseCase, Expression);
 
-        env.define(name, value);
+        var result = cond.eval(caller, env);
+        this.$DefaultEnvironment_checkType(result, BooleanExpression);
 
-        return value;
-    }) });
+        if (result.value) {
+            return trueCase.eval(caller, env);
+        } else {
+            return falseCase.eval(caller, env);
+        }
+    } });
 
 module.exports = DefaultEnvironment;
 
-},{"../parser/ast/LiteralExpression":24,"../parser/ast/NameExpression":25,"../parser/ast/NativeFunctionDefinition":26,"../parser/ast/NumberExpression":28,"../parser/ast/StringExpression":30,"./Environment":32,"./RuntimeError":36}],32:[function(require,module,exports){
+},{"../parser/ast/BooleanExpression":19,"../parser/ast/Expression":20,"../parser/ast/LiteralExpression":24,"../parser/ast/NameExpression":25,"../parser/ast/NativeFunctionDefinition":26,"../parser/ast/NumberExpression":28,"../parser/ast/StringExpression":30,"./Environment":32,"./RuntimeError":36}],32:[function(require,module,exports){
 /**
  * Represents a table of names mapped to expressions, with scoping support
  */
@@ -1792,7 +1886,7 @@ Object.defineProperty(Interpreter, "run", { writable: true, configurable: true, 
         }
 
         try {
-            return new RunResult(program.eval(env), env, null);
+            return new RunResult(program.eval(program, env), env, null);
         } catch (error) {
             return new RunResult(program, env, error);
         }
@@ -1841,7 +1935,7 @@ Object.defineProperty(Repl.prototype, "$Repl_eval", { writable: true, configurab
         }
 
         try {
-            return new RunResult(expr.eval(env), env, null);
+            return new RunResult(expr.eval(expr, env), env, null);
         } catch (error) {
             return new RunResult(expr, env, error);
         }
