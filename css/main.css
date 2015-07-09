@@ -52,7 +52,8 @@ table {
   top: 0;
   bottom: 0;
   border: 1px solid darkgray;
-  padding: 4px; }
+  padding: 4px;
+  overflow: auto; }
   .repl-box * {
     font-size: 16px;
     line-height: 16px;
