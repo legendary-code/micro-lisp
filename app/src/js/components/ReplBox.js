@@ -8,22 +8,26 @@ let React = require('react'),
     FunctionDefinition = require('../parser/ast/FunctionDefinition'),
     Invocation = require('../parser/ast/Invocation'),
     StringExpression = require('../parser/ast/StringExpression'),
-    RuntimeError = require('../runtime/RuntimeError');
+    RuntimeError = require('../runtime/RuntimeError'),
+    ReplFeatures = require('../runtime/features/ReplFeatures');
 
 /**
  * Represents a REPL component with input box and scrolling output
  */
 class ReplBox extends React.Component {
     constructor() {
-        this.state = {
-            lines: []
-        };
-
         this._reset();
+        this.state = {
+            lines: this._lines
+        };
+    }
+
+    _updateLines() {
+        this.setState({lines: this._lines});
     }
 
     _reset() {
-        this.state.lines = [
+        this._lines = [
             <ReplOutputLine>
                 Welcome to the Micro-Lisp REPL!<br />
                 Type '(help)' for a list of commands
@@ -31,19 +35,10 @@ class ReplBox extends React.Component {
         ];
 
         this._repl = new Repl();
-        this._installCommand("help");
-        this._installCommand("clear");
-        this._installCommand("reset");
-    }
-
-    _installCommand(command) {
-        this._repl.env.defineGlobal(
-            command,
-            new NativeFunctionDefinition(
-                null,
-                v => this._replCommand.apply(this, [command])
-            )
-        );
+        new ReplFeatures({
+            clear: this._clearCommand.bind(this),
+            reset: this._resetCommand.bind(this)
+        }).install(this._repl.env);
     }
 
     render() {
@@ -62,67 +57,44 @@ class ReplBox extends React.Component {
             return false;
         }
 
-        let lines = this.state.lines;
-        lines.push(
-            <ReplInputLine editable={false}>{code}</ReplInputLine>
+        this._lines.push(
+            <ReplInputLine readOnly={true}>{code}</ReplInputLine>
         );
 
         let result = this._repl.eval(code);
-        let stdout = this._repl.env.findGlobal("$stdout");
-        this._repl.env.defineGlobal("$stdout", null);
-
-        if (this.state.replCommandExecuted) {
-            this.setState({lines: this.state.lines, replCommandExecuted: false});
-            return true;
-        }
+        let stdout = this._repl.env.getStdout();
+        this._repl.env.clearStdout();
 
         if (stdout) {
-            lines.push(
+            this._lines.push(
                 <ReplOutputLine>{stdout}</ReplOutputLine>
             );
         }
 
         if (result.expression) {
-            lines.push(
+            this._lines.push(
                 <ReplExpressionLine>{result.expression.toString()}</ReplExpressionLine>
             );
         }
 
         if (result.error) {
-            lines.push(
+            this._lines.push(
                 <ReplErrorLine>{result.error.toString()}</ReplErrorLine>
             );
         }
 
-        this.setState({lines: lines});
-
+        this._updateLines();
         return true;
     }
 
-    _replCommand(command) {
-        this.state.replCommandExecuted = true;
+    _clearCommand() {
+        this._lines = [];
+        this._updateLines();
+    }
 
-        switch (command) {
-            case "help":
-                this.state.lines.push(
-                    <ReplOutputLine>
-                        (help)  - shows this information<br/>
-                        (clear) - clears output<br />
-                        (reset) - reset everything
-                    </ReplOutputLine>
-                );
-                break;
-
-            case "clear":
-                this.state.lines = [];
-                break;
-
-            case "reset":
-                this._reset();
-                break;
-        }
-
-        return true;
+    _resetCommand() {
+        this._reset();
+        this._updateLines();
     }
 }
 

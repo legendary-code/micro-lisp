@@ -9,7 +9,7 @@ class Program extends Node {
         this._expressions = expressions;
     }
 
-    eval(caller, env) {
+    eval(context, env) {
         let lastExpr = null;
 
         // enter extra scope, so we can't clobber names in global namespace
@@ -17,7 +17,7 @@ class Program extends Node {
         env.enterScope();
 
         this._expressions.forEach(e => {
-            lastExpr = e.eval(caller, env);
+            lastExpr = e.eval(context, env);
         });
 
         env.exitScope();

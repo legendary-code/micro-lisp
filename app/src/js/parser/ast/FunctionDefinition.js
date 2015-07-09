@@ -11,7 +11,7 @@ class FunctionDefinition extends Node {
         this._expression = expression;
     }
 
-    eval(caller, env) {
+    eval(context, env) {
         env.define(this._name, this);
         return this;
     }

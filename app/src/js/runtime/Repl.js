@@ -13,10 +13,10 @@ class Repl {
     }
 
     eval(code) {
-        return this._eval(code, this._env);
+        return this.evalWithEnv(code, this._env);
     }
 
-    _eval(code, env) {
+    evalWithEnv(code, env) {
         let stream;
         let expr;
 

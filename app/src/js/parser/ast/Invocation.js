@@ -21,32 +21,19 @@ class Invocation extends Node {
         return this._args;
     }
 
-    eval(caller, env) {
+    eval(context, env) {
         let funcDef = env.find(this._name);
 
         if (!funcDef) {
             throw new RuntimeError("function with name '" + this._name + "' not found", this.location)
         }
 
-        if (funcDef.type == FunctionDefinition && funcDef.args.length != this._args.length) {
-            throw new RuntimeError(
-                "wrong number of arguments while invoking function '" + this._name +"', "+
-                "expected " + funcDef.args.length +", was " + this._args.length,
-                this.location
-            );
-        }
+        switch (funcDef.type) {
+            case FunctionDefinition:
+                return this._evalFunction(funcDef, env);
 
-        let evaluatedArgs = [];
-        for (let i = 0; i < this._args.length; ++i) {
-            evaluatedArgs.push(this._args[i].eval(caller, env));
-        }
-
-        if (funcDef.constructor == FunctionDefinition) {
-            return this._evalFunction(funcDef, env, evaluatedArgs);
-        }
-
-        if (funcDef.constructor == NativeFunctionDefinition) {
-            return this._evalNativeFunction(funcDef, env, evaluatedArgs);
+            case NativeFunctionDefinition:
+                return this._evalNativeFunction(funcDef, env);
         }
 
         throw new RuntimeError(
@@ -56,22 +43,36 @@ class Invocation extends Node {
         );
     }
 
-    _evalFunction(funcDef, env, args) {
+    _evalFunction(funcDef, env) {
+        if (funcDef.args.length != this._args.length) {
+            throw new RuntimeError(
+                "wrong number of arguments while invoking function '" + this._name +"', "+
+                "expected " + funcDef.args.length +", was " + this._args.length,
+                this.location
+            );
+        }
+
+        let evaluatedArgs = [];
+        for (let i = 0; i < this._args.length; ++i) {
+            evaluatedArgs.push(this._args[i].eval(this, env));
+        }
+
         env.enterScope();
 
         for (let i = 0; i < this._args.length; ++i) {
-            env.define(funcDef.args[i], args[i]);
+            env.define(funcDef.args[i], evaluatedArgs[i]);
         }
 
-        let value = funcDef.expression.eval(funcDef, env);
+        let value = funcDef.expression.eval(this, env);
 
         env.exitScope();
 
         return value;
     }
 
-    _evalNativeFunction(funcDef, env, args) {
-        return funcDef.evalFunc(funcDef, env, args);
+    _evalNativeFunction(funcDef, env) {
+        // We don't evaluate arguments: we allow the native function to decide when and how to evaluate them
+        return funcDef.evalFunc(this, env, this._args);
     }
 
     toString() {
