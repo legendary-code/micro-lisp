@@ -9,7 +9,7 @@ class ReplInputLine extends React.Component {
         let content = (
                 <textarea
                     ref="code"
-                    rows="1"
+                    rows={this.props.rows}
                     spellCheck="false"
                     autoComplete="off"
                     autoCorrect="off"
@@ -64,13 +64,15 @@ class ReplInputLine extends React.Component {
     static get propTypes() {
         return {
             readOnly: React.PropTypes.bool,
+            rows: React.PropTypes.number,
             onSubmit: React.PropTypes.func
         }
     }
 
     static get defaultProps() {
         return {
-            editable: true
+            readOnly: false,
+            rows: 1
         };
     }
 }
