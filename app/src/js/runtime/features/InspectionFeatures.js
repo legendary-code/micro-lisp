@@ -4,7 +4,10 @@ let Features = require('./Features'),
     Tokenizer = require('../../lexer/Tokenizer'),
     Parser = require('../../parser/Parser');
 
-    class InspectionFeatures extends Features {
+/**
+ *  Support for inspecting names and other special functionality
+ */
+class InspectionFeatures extends Features {
     install(env) {
         this.defineFunction(env,"names", this._names.bind(this));
         this.defineFunction(env,"eval", this._eval.bind(this));
