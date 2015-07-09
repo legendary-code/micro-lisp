@@ -6,7 +6,7 @@ class Node {
         this._location = location;
     }
 
-    eval(caller, env) {
+    eval(context, env) {
         throw "eval() must be implemented for type " + this.constructor.name;
     }
 
@@ -20,6 +20,10 @@ class Node {
 
     get type() {
         return this.constructor;
+    }
+
+    isOfType(type) {
+        return this instanceof type;
     }
 }
 

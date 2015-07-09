@@ -1,10 +1,10 @@
-let Node = require('./Node'),
+let Expression = require('./Expression'),
     RuntimeError = require('../../runtime/RuntimeError');
 
 /**
  * Represents a name expression
  */
-class NameExpression extends Node {
+class NameExpression extends Expression {
     constructor(location, name) {
         super(location);
         this._name = name;
@@ -14,7 +14,7 @@ class NameExpression extends Node {
         return this._name;
     }
 
-    eval(caller, env) {
+    eval(context, env) {
         let value = env.find(this._name);
 
         if (!value) {
@@ -25,7 +25,7 @@ class NameExpression extends Node {
     }
 
     toString() {
-        return "[Name " + this._name + "]";
+        return "[NameExpression " + this._name + "]";
     }
 }
 

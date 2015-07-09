@@ -120,10 +120,6 @@ class Parser {
                     return this._parseFunctionDefinition();
                 }
 
-                if (this._peek().value == "let") {
-                    return this._parseLetExpression();
-                }
-
                 return this._parseInvocation();
 
             case TokenType.NAME:
@@ -139,7 +135,7 @@ class Parser {
 
     _parseName(location, name) {
         if (name === "true" || name === "false") {
-            return new BooleanExpression(location, Boolean(name));
+            return new BooleanExpression(location, name === "true");
         }
 
         return new NameExpression(location, name);
@@ -178,17 +174,6 @@ class Parser {
         this._expect(TokenType.RIGHT_PAREN);
 
         return new FunctionDefinition(location, nameToken.value, args, expression);
-    }
-
-    _parseLetExpression() {
-        let location = this._expect(TokenType.LEFT_PAREN).location;
-        this._expectName("let");
-        let nameToken = this._expect(TokenType.NAME);
-        let expression = this._parseExpression();
-
-        this._expect(TokenType.RIGHT_PAREN);
-
-        return new LetExpression(location, nameToken.value, expression);
     }
 }
 

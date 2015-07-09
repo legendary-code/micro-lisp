@@ -6,19 +6,20 @@ let React = require('react'),
  */
 class ReplInputLine extends React.Component {
     render() {
-        let content =
-            this.props.editable ?
-            (<textarea
-                ref="code"
-                rows="1"
-                spellcheck="false"
-                autocomplete="off"
-                autocorrect="off"
-                autocapitalize="off"
-                onKeyDown={this._keyDown.bind(this)}
-                onKeyUp={this._keyUp.bind(this)}>
-            </textarea>) :
-            this.props.children;
+        let content = (
+                <textarea
+                    ref="code"
+                    rows="1"
+                    spellCheck="false"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    onKeyDown={this._keyDown.bind(this)}
+                    onInput={this._onInput.bind(this)}
+                    readOnly={this.props.readOnly}
+                    value={this.props.children}>
+                </textarea>
+            );
 
         return (
             <ReplLine marginSymbol={"\u00bb"} contentClassName="repl-input-line-content">
@@ -44,30 +45,26 @@ class ReplInputLine extends React.Component {
             ref.selectionStart = ref.selectionEnd = start + 2;
 
             // prevent the focus lose
-            return false;
+            e.preventDefault();
         } else if (e.keyCode === 13) { // enter was pressed
             // possibly need to evaluate
             if (this.props.onSubmit(ref.value)) {
                 // handled upstream
                 ref.value = "";
-                return false;
+                e.preventDefault();
             }
         }
-
-        return true;
     }
 
-    _keyUp() {
+    _onInput() {
         let ref = React.findDOMNode(this.refs.code);
         ref.rows = ref.value.split("\n").length;
-
-        return true;
     }
 
     static get propTypes() {
         return {
-            editable: React.PropTypes.bool,
-            onSubmit: React.PropTypes.func.isRequired
+            readOnly: React.PropTypes.bool,
+            onSubmit: React.PropTypes.func
         }
     }
 
