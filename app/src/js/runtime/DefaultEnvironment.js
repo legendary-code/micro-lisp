@@ -3,7 +3,8 @@ let Environment = require('./Environment'),
     OutputFeatures = require('./features/OutputFeatures'),
     LanguageFeatures = require('./features/LanguageFeatures'),
     InspectionFeatures = require('./features/InspectionFeatures'),
-    ComparisonFeatures = require('./features/ComparisonFeatures');
+    ComparisonFeatures = require('./features/ComparisonFeatures'),
+    StringFeatures = require('./features/StringFeatures');
 
 /**
  * Provides an environment with built-in names and functionality
@@ -17,6 +18,7 @@ class DefaultEnvironment extends Environment {
         new LanguageFeatures().install(this);
         new InspectionFeatures().install(this);
         new ComparisonFeatures().install(this);
+        new StringFeatures().install(this);
     }
 }
 

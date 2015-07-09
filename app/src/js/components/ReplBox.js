@@ -58,7 +58,7 @@ class ReplBox extends React.Component {
         }
 
         this._lines.push(
-            <ReplInputLine readOnly={true}>{code}</ReplInputLine>
+            <ReplInputLine readOnly={true} rows={code.split("\n").length}>{code}</ReplInputLine>
         );
 
         let result = this._repl.eval(code);

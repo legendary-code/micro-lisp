@@ -38,7 +38,7 @@ class MathFeatures extends Features {
             throw this.badNumberOfArguments(context.name, 2, args.length);
         }
 
-        return _nnaryOp(context, env, operator, args);
+        return this._nnaryOp(context, env, operator, args);
     }
 
     _nnaryOp(context, env, operator, args) {
