@@ -54,7 +54,7 @@ class MathFeatures extends Features {
         evaluatedArgs = evaluatedArgs.slice(2);
 
         while (evaluatedArgs.length > 0) {
-            result = operator(result, evaluatedArgs[0]);
+            result = operator(result, evaluatedArgs[0].value);
             evaluatedArgs = evaluatedArgs.slice(1);
         }
 
