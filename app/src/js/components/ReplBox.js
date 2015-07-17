@@ -22,6 +22,10 @@ class ReplBox extends React.Component {
         };
     }
 
+    componentDidMount() {
+        this.refs.inputLine.focus();
+    }
+
     _updateLines() {
         this.setState({lines: this._lines});
     }
@@ -46,7 +50,7 @@ class ReplBox extends React.Component {
             <div className="repl-box">
                 <div className="inner-box">
                     {this.state.lines}
-                    <ReplInputLine onSubmit={this._onSubmit.bind(this)}/>
+                    <ReplInputLine ref="inputLine" onSubmit={this._onSubmit.bind(this)}/>
                 </div>
             </div>
         );

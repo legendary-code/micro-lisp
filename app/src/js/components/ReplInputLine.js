@@ -61,6 +61,10 @@ class ReplInputLine extends React.Component {
         ref.rows = ref.value.split("\n").length;
     }
 
+    focus() {
+        React.findDOMNode(this.refs.code).focus();
+    }
+
     static get propTypes() {
         return {
             readOnly: React.PropTypes.bool,
