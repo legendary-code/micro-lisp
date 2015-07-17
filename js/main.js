@@ -182,13 +182,13 @@ var React = require("react"),
 /**
  * Represents an error that occurred during evaluation
  */
-var ____Class4 = React.Component;for (var ____Class4____Key in ____Class4) {
-    if (____Class4.hasOwnProperty(____Class4____Key)) {
-        ReplErrorLine[____Class4____Key] = ____Class4[____Class4____Key];
+var ____Class3 = React.Component;for (var ____Class3____Key in ____Class3) {
+    if (____Class3.hasOwnProperty(____Class3____Key)) {
+        ReplErrorLine[____Class3____Key] = ____Class3[____Class3____Key];
     }
-}var ____SuperProtoOf____Class4 = ____Class4 === null ? null : ____Class4.prototype;ReplErrorLine.prototype = Object.create(____SuperProtoOf____Class4);ReplErrorLine.prototype.constructor = ReplErrorLine;ReplErrorLine.__superConstructor__ = ____Class4;function ReplErrorLine() {
-    "use strict";if (____Class4 !== null) {
-        ____Class4.apply(this, arguments);
+}var ____SuperProtoOf____Class3 = ____Class3 === null ? null : ____Class3.prototype;ReplErrorLine.prototype = Object.create(____SuperProtoOf____Class3);ReplErrorLine.prototype.constructor = ReplErrorLine;ReplErrorLine.__superConstructor__ = ____Class3;function ReplErrorLine() {
+    "use strict";if (____Class3 !== null) {
+        ____Class3.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplErrorLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -210,13 +210,13 @@ var React = require("react"),
 /**
  * Represents the return expression in textual form
  */
-var ____Class3 = React.Component;for (var ____Class3____Key in ____Class3) {
-    if (____Class3.hasOwnProperty(____Class3____Key)) {
-        ReplExpressionLine[____Class3____Key] = ____Class3[____Class3____Key];
+var ____Class2 = React.Component;for (var ____Class2____Key in ____Class2) {
+    if (____Class2.hasOwnProperty(____Class2____Key)) {
+        ReplExpressionLine[____Class2____Key] = ____Class2[____Class2____Key];
     }
-}var ____SuperProtoOf____Class3 = ____Class3 === null ? null : ____Class3.prototype;ReplExpressionLine.prototype = Object.create(____SuperProtoOf____Class3);ReplExpressionLine.prototype.constructor = ReplExpressionLine;ReplExpressionLine.__superConstructor__ = ____Class3;function ReplExpressionLine() {
-    "use strict";if (____Class3 !== null) {
-        ____Class3.apply(this, arguments);
+}var ____SuperProtoOf____Class2 = ____Class2 === null ? null : ____Class2.prototype;ReplExpressionLine.prototype = Object.create(____SuperProtoOf____Class2);ReplExpressionLine.prototype.constructor = ReplExpressionLine;ReplExpressionLine.__superConstructor__ = ____Class2;function ReplExpressionLine() {
+    "use strict";if (____Class2 !== null) {
+        ____Class2.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplExpressionLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -237,11 +237,11 @@ var React = require("react"),
 /**
  * Represents the input box in a REPL box
  */
-var ____Class5 = React.Component;for (var ____Class5____Key in ____Class5) {
-    if (____Class5.hasOwnProperty(____Class5____Key)) {
-        ReplInputLine[____Class5____Key] = ____Class5[____Class5____Key];
+var ____Class4 = React.Component;for (var ____Class4____Key in ____Class4) {
+    if (____Class4.hasOwnProperty(____Class4____Key)) {
+        ReplInputLine[____Class4____Key] = ____Class4[____Class4____Key];
     }
-}var ____SuperProtoOf____Class5 = ____Class5 === null ? null : ____Class5.prototype;ReplInputLine.prototype = Object.create(____SuperProtoOf____Class5);ReplInputLine.prototype.constructor = ReplInputLine;ReplInputLine.__superConstructor__ = ____Class5;
+}var ____SuperProtoOf____Class4 = ____Class4 === null ? null : ____Class4.prototype;ReplInputLine.prototype = Object.create(____SuperProtoOf____Class4);ReplInputLine.prototype.constructor = ReplInputLine;ReplInputLine.__superConstructor__ = ____Class4;
 function ReplInputLine() {
     "use strict";
     this.state = {
@@ -289,14 +289,14 @@ Object.defineProperty(ReplInputLine.prototype, "$ReplInputLine_keyDown", { writa
             e.preventDefault();
         } else if (e.keyCode === 13) {
             // enter was pressed
-            this.state.history[this.state.history.length - 1] = ref.value;
-            this.state.history.push("");
-            this.state.historyIndex = this.state.history.length - 1;
-
             // possibly need to evaluate
             if (this.props.onSubmit(ref.value)) {
                 // handled upstream
+                this.state.history[this.state.history.length - 1] = ref.value;
+                this.state.history.push("");
+                this.state.historyIndex = this.state.history.length - 1;
                 ref.value = "";
+                this.$ReplInputLine_adjustTextAreaSize();
                 e.preventDefault();
             }
         } else if (e.keyCode === 38) {
@@ -304,6 +304,7 @@ Object.defineProperty(ReplInputLine.prototype, "$ReplInputLine_keyDown", { writa
             if (this.state.historyIndex > 0) {
                 this.state.historyIndex--;
                 ref.value = this.state.history[this.state.historyIndex];
+                this.$ReplInputLine_adjustTextAreaSize();
             }
             e.preventDefault();
         } else if (e.keyCode === 40) {
@@ -311,6 +312,7 @@ Object.defineProperty(ReplInputLine.prototype, "$ReplInputLine_keyDown", { writa
             if (this.state.historyIndex < this.state.history.length - 1) {
                 this.state.historyIndex++;
                 ref.value = this.state.history[this.state.historyIndex];
+                this.$ReplInputLine_adjustTextAreaSize();
             }
             e.preventDefault();
         }
@@ -319,9 +321,15 @@ Object.defineProperty(ReplInputLine.prototype, "$ReplInputLine_keyDown", { writa
 Object.defineProperty(ReplInputLine.prototype, "$ReplInputLine_onInput", { writable: true, configurable: true, value: function value() {
         "use strict";
         var ref = React.findDOMNode(this.refs.code);
-        ref.rows = ref.value.split("\n").length;
+        this.$ReplInputLine_adjustTextAreaSize();
         this.state.historyIndex = this.state.history.length - 1;
         this.state.history[this.state.historyIndex] = ref.value;
+    } });
+
+Object.defineProperty(ReplInputLine.prototype, "$ReplInputLine_adjustTextAreaSize", { writable: true, configurable: true, value: function value() {
+        "use strict";
+        var ref = React.findDOMNode(this.refs.code);
+        ref.rows = ref.value.split("\n").length;
     } });
 
 Object.defineProperty(ReplInputLine.prototype, "focus", { writable: true, configurable: true, value: function value() {
@@ -409,13 +417,13 @@ var React = require("react"),
 /**
  * Represents a block of output written to stdout from evaluating an expression
  */
-var ____Class2 = React.Component;for (var ____Class2____Key in ____Class2) {
-    if (____Class2.hasOwnProperty(____Class2____Key)) {
-        ReplOutputLine[____Class2____Key] = ____Class2[____Class2____Key];
+var ____Class5 = React.Component;for (var ____Class5____Key in ____Class5) {
+    if (____Class5.hasOwnProperty(____Class5____Key)) {
+        ReplOutputLine[____Class5____Key] = ____Class5[____Class5____Key];
     }
-}var ____SuperProtoOf____Class2 = ____Class2 === null ? null : ____Class2.prototype;ReplOutputLine.prototype = Object.create(____SuperProtoOf____Class2);ReplOutputLine.prototype.constructor = ReplOutputLine;ReplOutputLine.__superConstructor__ = ____Class2;function ReplOutputLine() {
-    "use strict";if (____Class2 !== null) {
-        ____Class2.apply(this, arguments);
+}var ____SuperProtoOf____Class5 = ____Class5 === null ? null : ____Class5.prototype;ReplOutputLine.prototype = Object.create(____SuperProtoOf____Class5);ReplOutputLine.prototype.constructor = ReplOutputLine;ReplOutputLine.__superConstructor__ = ____Class5;function ReplOutputLine() {
+    "use strict";if (____Class5 !== null) {
+        ____Class5.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplOutputLine.prototype, "render", { writable: true, configurable: true, value: function value() {
