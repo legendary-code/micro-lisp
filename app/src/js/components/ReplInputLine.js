@@ -55,26 +55,28 @@ class ReplInputLine extends React.Component {
             // prevent the focus lose
             e.preventDefault();
         } else if (e.keyCode === 13) { // enter was pressed
-            this.state.history[this.state.history.length - 1] = ref.value;
-            this.state.history.push("");
-            this.state.historyIndex = this.state.history.length - 1;
-
             // possibly need to evaluate
             if (this.props.onSubmit(ref.value)) {
                 // handled upstream
+                this.state.history[this.state.history.length - 1] = ref.value;
+                this.state.history.push("");
+                this.state.historyIndex = this.state.history.length - 1;
                 ref.value = "";
+                this._adjustTextAreaSize();
                 e.preventDefault();
             }
         } else if (e.keyCode === 38) { // up arrow
             if (this.state.historyIndex > 0) {
                 this.state.historyIndex--;
                 ref.value = this.state.history[this.state.historyIndex];
+                this._adjustTextAreaSize();
             }
             e.preventDefault();
         } else if (e.keyCode === 40) { // down arrow
             if (this.state.historyIndex < this.state.history.length - 1) {
                 this.state.historyIndex++;
                 ref.value = this.state.history[this.state.historyIndex];
+                this._adjustTextAreaSize();
             }
             e.preventDefault();
         }
@@ -82,9 +84,14 @@ class ReplInputLine extends React.Component {
 
     _onInput() {
         let ref = React.findDOMNode(this.refs.code);
-        ref.rows = ref.value.split("\n").length;
+        this._adjustTextAreaSize();
         this.state.historyIndex = this.state.history.length - 1;
         this.state.history[this.state.historyIndex] = ref.value;
+    }
+
+    _adjustTextAreaSize() {
+        let ref = React.findDOMNode(this.refs.code);
+        ref.rows = ref.value.split("\n").length;
     }
 
     focus() {
