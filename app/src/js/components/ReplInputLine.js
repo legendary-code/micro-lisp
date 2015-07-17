@@ -2,9 +2,17 @@ let React = require('react'),
     ReplLine = require('./ReplLine');
 
 /**
- * Represents the input box in a REPL box \u00bb
+ * Represents the input box in a REPL box
  */
 class ReplInputLine extends React.Component {
+    constructor() {
+        this.state = {
+            history: [""],
+            historyIndex: 0
+        };
+    }
+
+
     render() {
         let content = (
                 <textarea
@@ -47,18 +55,36 @@ class ReplInputLine extends React.Component {
             // prevent the focus lose
             e.preventDefault();
         } else if (e.keyCode === 13) { // enter was pressed
+            this.state.history[this.state.history.length - 1] = ref.value;
+            this.state.history.push("");
+            this.state.historyIndex = this.state.history.length - 1;
+
             // possibly need to evaluate
             if (this.props.onSubmit(ref.value)) {
                 // handled upstream
                 ref.value = "";
                 e.preventDefault();
             }
+        } else if (e.keyCode === 38) { // up arrow
+            if (this.state.historyIndex > 0) {
+                this.state.historyIndex--;
+                ref.value = this.state.history[this.state.historyIndex];
+            }
+            e.preventDefault();
+        } else if (e.keyCode === 40) { // down arrow
+            if (this.state.historyIndex < this.state.history.length - 1) {
+                this.state.historyIndex++;
+                ref.value = this.state.history[this.state.historyIndex];
+            }
+            e.preventDefault();
         }
     }
 
     _onInput() {
         let ref = React.findDOMNode(this.refs.code);
         ref.rows = ref.value.split("\n").length;
+        this.state.historyIndex = this.state.history.length - 1;
+        this.state.history[this.state.historyIndex] = ref.value;
     }
 
     focus() {
