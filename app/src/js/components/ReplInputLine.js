@@ -6,12 +6,8 @@ let React = require('react'),
  */
 class ReplInputLine extends React.Component {
     constructor() {
-        this.state = {
-            history: [""],
-            historyIndex: 0
-        };
+        this.resetHistory();
     }
-
 
     render() {
         let content = (
@@ -55,12 +51,17 @@ class ReplInputLine extends React.Component {
             // prevent the focus lose
             e.preventDefault();
         } else if (e.keyCode === 13) { // enter was pressed
+            let submitResult = this.props.onSubmit(ref.value);
+
             // possibly need to evaluate
-            if (this.props.onSubmit(ref.value)) {
+            if (submitResult == ReplInputLine.ACCEPTED || submitResult == ReplInputLine.ACCEPTED_NO_HISTORY) {
                 // handled upstream
-                this.state.history[this.state.history.length - 1] = ref.value;
-                this.state.history.push("");
-                this.state.historyIndex = this.state.history.length - 1;
+                if (submitResult == ReplInputLine.ACCEPTED) {
+                    this.state.history[this.state.history.length - 1] = ref.value;
+                    this.state.history.push("");
+                    this.state.historyIndex = this.state.history.length - 1;
+                }
+
                 ref.value = "";
                 this._adjustTextAreaSize();
                 e.preventDefault();
@@ -98,6 +99,13 @@ class ReplInputLine extends React.Component {
         React.findDOMNode(this.refs.code).focus();
     }
 
+    resetHistory() {
+        this.state = {
+            history: [""],
+            historyIndex: 0
+        };
+    }
+
     static get propTypes() {
         return {
             readOnly: React.PropTypes.bool,
@@ -113,5 +121,9 @@ class ReplInputLine extends React.Component {
         };
     }
 }
+
+ReplInputLine.CONTINUE = 0;
+ReplInputLine.ACCEPTED = 1;
+ReplInputLine.ACCEPTED_NO_HISTORY = 2;
 
 module.exports = ReplInputLine;

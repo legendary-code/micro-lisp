@@ -58,7 +58,7 @@ class ReplBox extends React.Component {
 
     _onSubmit(code) {
         if (!this._repl.canParse(code)) {
-            return false;
+            return ReplInputLine.CONTINUE;
         }
 
         this._lines.push(
@@ -88,7 +88,10 @@ class ReplBox extends React.Component {
         }
 
         this._updateLines();
-        return true;
+
+        let action = this._preventHistory ? ReplInputLine.ACCEPTED_NO_HISTORY : ReplInputLine.ACCEPTED;
+        this._preventHistory = false;
+        return action;
     }
 
     _clearCommand() {
@@ -99,6 +102,8 @@ class ReplBox extends React.Component {
     _resetCommand() {
         this._reset();
         this._updateLines();
+        this.refs.inputLine.resetHistory();
+        this._preventHistory = true;
     }
 }
 
