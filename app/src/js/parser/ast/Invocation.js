@@ -63,9 +63,13 @@ class Invocation extends Node {
             env.define(funcDef.args[i], evaluatedArgs[i]);
         }
 
-        let value = funcDef.expression.eval(this, env);
+        let value;
 
-        env.exitScope();
+        try {
+            value = funcDef.expression.eval(this, env);
+        } finally {
+            env.exitScope();
+        }
 
         return value;
     }
