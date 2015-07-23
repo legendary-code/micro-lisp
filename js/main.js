@@ -215,13 +215,13 @@ var React = require("react"),
 /**
  * Represents the return expression in textual form
  */
-var ____Class3 = React.Component;for (var ____Class3____Key in ____Class3) {
-    if (____Class3.hasOwnProperty(____Class3____Key)) {
-        ReplExpressionLine[____Class3____Key] = ____Class3[____Class3____Key];
+var ____Class2 = React.Component;for (var ____Class2____Key in ____Class2) {
+    if (____Class2.hasOwnProperty(____Class2____Key)) {
+        ReplExpressionLine[____Class2____Key] = ____Class2[____Class2____Key];
     }
-}var ____SuperProtoOf____Class3 = ____Class3 === null ? null : ____Class3.prototype;ReplExpressionLine.prototype = Object.create(____SuperProtoOf____Class3);ReplExpressionLine.prototype.constructor = ReplExpressionLine;ReplExpressionLine.__superConstructor__ = ____Class3;function ReplExpressionLine() {
-    "use strict";if (____Class3 !== null) {
-        ____Class3.apply(this, arguments);
+}var ____SuperProtoOf____Class2 = ____Class2 === null ? null : ____Class2.prototype;ReplExpressionLine.prototype = Object.create(____SuperProtoOf____Class2);ReplExpressionLine.prototype.constructor = ReplExpressionLine;ReplExpressionLine.__superConstructor__ = ____Class2;function ReplExpressionLine() {
+    "use strict";if (____Class2 !== null) {
+        ____Class2.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplExpressionLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -436,13 +436,13 @@ var React = require("react"),
 /**
  * Represents a block of output written to stdout from evaluating an expression
  */
-var ____Class2 = React.Component;for (var ____Class2____Key in ____Class2) {
-    if (____Class2.hasOwnProperty(____Class2____Key)) {
-        ReplOutputLine[____Class2____Key] = ____Class2[____Class2____Key];
+var ____Class3 = React.Component;for (var ____Class3____Key in ____Class3) {
+    if (____Class3.hasOwnProperty(____Class3____Key)) {
+        ReplOutputLine[____Class3____Key] = ____Class3[____Class3____Key];
     }
-}var ____SuperProtoOf____Class2 = ____Class2 === null ? null : ____Class2.prototype;ReplOutputLine.prototype = Object.create(____SuperProtoOf____Class2);ReplOutputLine.prototype.constructor = ReplOutputLine;ReplOutputLine.__superConstructor__ = ____Class2;function ReplOutputLine() {
-    "use strict";if (____Class2 !== null) {
-        ____Class2.apply(this, arguments);
+}var ____SuperProtoOf____Class3 = ____Class3 === null ? null : ____Class3.prototype;ReplOutputLine.prototype = Object.create(____SuperProtoOf____Class3);ReplOutputLine.prototype.constructor = ReplOutputLine;ReplOutputLine.__superConstructor__ = ____Class3;function ReplOutputLine() {
+    "use strict";if (____Class3 !== null) {
+        ____Class3.apply(this, arguments);
     }
 }
 Object.defineProperty(ReplOutputLine.prototype, "render", { writable: true, configurable: true, value: function value() {
@@ -1354,9 +1354,13 @@ Object.defineProperty(Invocation.prototype, "$Invocation_evalFunction", { writab
             env.define(funcDef.args[i], evaluatedArgs[i]);
         }
 
-        var value = funcDef.expression.eval(this, env);
+        var value = undefined;
 
-        env.exitScope();
+        try {
+            value = funcDef.expression.eval(this, env);
+        } finally {
+            env.exitScope();
+        }
 
         return value;
     }) });
